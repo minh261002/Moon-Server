@@ -1,15 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { JwtUtil, TokenPayload } from '@/utils/jwt';
+import { JwtUtil } from '@/utils/jwt';
 import { AppError } from '@/utils/AppError';
-
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Express {
-    interface Request {
-      user?: TokenPayload;
-    }
-  }
-}
+import { User } from '@/types/auth.type';
 
 export const authenticate = async (
   req: Request,
@@ -26,7 +18,7 @@ export const authenticate = async (
     const token = authHeader.split(' ')[1];
     const decoded = JwtUtil.verifyToken(token);
 
-    req.user = decoded;
+    req.user = decoded as unknown as User;
     next();
   } catch (error) {
     next(new AppError('Invalid token', 401));

@@ -13,6 +13,7 @@ import {
   resetPasswordService,
   sendEmailService,
   verifyOtpService,
+  getMeService,
 } from '@/services/auth.service';
 import { validateRequest } from '@/middlewares/validateRequest';
 import {
@@ -25,13 +26,9 @@ import {
 import { ApiResponseUtil } from '@/utils/apiResponse';
 
 const loginHandler = async (req: Request, res: Response) => {
-  try {
-    const { email, password } = req.body as LoginRequest;
-    const token = await loginService(email, password);
-    return ApiResponseUtil.success(res, token, 'Login successful');
-  } catch (error: any) {
-    return ApiResponseUtil.error(res, error.message, error.errors);
-  }
+  const { email, password } = req.body as LoginRequest;
+  const token = await loginService(email, password);
+  return ApiResponseUtil.success(res, token, 'Login successful');
 };
 
 const registerHandler = async (req: Request, res: Response) => {
@@ -58,6 +55,11 @@ const resetPasswordHandler = async (req: Request, res: Response) => {
   return ApiResponseUtil.success(res, null, 'Password reset successfully');
 };
 
+const getMeHandler = async (req: Request, res: Response) => {
+  const response = await getMeService(req.user?.id as number);
+  return ApiResponseUtil.success(res, response, 'User fetched successfully');
+};
+
 export const loginController = [
   validateRequest({ body: loginSchema }),
   catchAsync(loginHandler),
@@ -81,3 +83,5 @@ export const resetPasswordController = [
   validateRequest({ body: resetPasswordSchema }),
   catchAsync(resetPasswordHandler),
 ];
+
+export const getMeController = [catchAsync(getMeHandler)];

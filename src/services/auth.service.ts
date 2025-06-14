@@ -153,3 +153,18 @@ export const resetPasswordService = async (email: string, password: string) => {
   });
   await prisma.userOtp.delete({ where: { id: otpExists.id } });
 };
+
+export const getMeService = async (userId: number) => {
+  const user = await prisma.user.findFirst({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password, ...userWithoutPassword } = user;
+
+  return userWithoutPassword;
+};
