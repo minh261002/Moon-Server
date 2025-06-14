@@ -41,6 +41,62 @@ model UserOtp {
   updatedAt  DateTime @updatedAt
 }
 
+model Category {
+  id        Int             @id @default(autoincrement())
+  name      String
+  slug      String          @unique
+  image     String?
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  brands    CategoryBrand[]
+  Product   Product[]
+}
+
+model Brand {
+  id         Int             @id @default(autoincrement())
+  name       String
+  slug       String          @unique
+  image      String?
+  isActive   Boolean         @default(true)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  categories CategoryBrand[]
+  Product    Product[]
+}
+
+model Product {
+  id               Int      @id @default(autoincrement())
+  name             String
+  slug             String   @unique
+  image            String?
+  gallery          Json?
+  price            Int
+  sale_price       Int?
+  description      String?
+  isActive         Boolean  @default(true)
+  meta_title       String?
+  meta_description String?
+  meta_keywords    String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  categoryId       Int
+  brandId          Int
+
+  category Category @relation(fields: [categoryId], references: [id])
+  brand    Brand    @relation(fields: [brandId], references: [id])
+}
+
+model CategoryBrand {
+  categoryId Int
+  brandId    Int
+
+  category Category @relation(fields: [categoryId], references: [id])
+  brand    Brand    @relation(fields: [brandId], references: [id])
+
+  @@id([categoryId, brandId]) // composite primary key
+}
+
 enum Role {
   USER
   ADMIN
